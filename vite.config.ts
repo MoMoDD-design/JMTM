@@ -1,17 +1,10 @@
 
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import process from 'node:process';
 
-export default defineConfig(({ mode }) => {
-  // Use process.cwd() to load environment variables from the project root
-  const env = loadEnv(mode, process.cwd(), '');
-  
-  return {
-    plugins: [react()],
-    define: {
-      // Inject API_KEY into the client-side bundle to satisfy the process.env.API_KEY requirement
-      'process.env.API_KEY': JSON.stringify(env.API_KEY || process.env.API_KEY)
-    }
-  };
+// Fix: Removed manual process.env.API_KEY definition and loadEnv to resolve 'process.cwd()' type error.
+// Adheres to guidelines stating that the API key is automatically injected into process.env.API_KEY
+// and should not be manually defined in the code.
+export default defineConfig({
+  plugins: [react()],
 });
