@@ -2,32 +2,44 @@
 <html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>JP Menu Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>日文菜單翻譯官</title>
     
-    <!-- iOS 專用 Meta 標籤 -->
+    <!-- iOS PWA Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="日文菜單翻譯">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="菜單翻譯">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/330/330439.png">
     
-    <!-- PWA Manifest - 使用相對路徑 -->
-    <link rel="manifest" href="manifest.json">
-
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Noto+Sans+TC:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
+      :root {
+        --safe-top: env(safe-area-inset-top);
+        --safe-bottom: env(safe-area-inset-bottom);
+      }
       body {
         font-family: 'Noto Sans TC', 'Noto Sans JP', sans-serif;
-        background-color: #fcfcfc;
-        overscroll-behavior-y: contain;
+        background-color: #F2F2F7;
+        margin: 0;
+        padding: 0;
+        -webkit-tap-highlight-color: transparent;
       }
-      @supports (padding-top: env(safe-area-inset-top)) {
-        .safe-top {
-          padding-top: env(safe-area-inset-top);
-        }
-      }
+      .safe-top-padding { padding-top: var(--safe-top); }
+      .safe-bottom-padding { padding-bottom: var(--safe-bottom); }
     </style>
+
+    <!-- 除錯專用：如果手機端報錯，會直接彈出視窗 -->
+    <script>
+      window.onerror = function(msg, url, line, col, error) {
+        alert("錯誤訊息: " + msg + "\n檔案: " + url + "\n行號: " + line);
+        return false;
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
     <script type="importmap">
 {
   "imports": {
@@ -35,15 +47,14 @@
     "react-dom": "https://esm.sh/react-dom@19.0.0",
     "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
     "@google/genai": "https://esm.sh/@google/genai@1.3.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "vite": "https://esm.sh/vite@^7.3.0"
   }
 }
 </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <!-- 必須加入此行來啟動應用程式 -->
+    <!-- 注意：如果你是在 GitHub Pages 使用，請確保這是一個已經編譯過的 .js 檔案 -->
     <script type="module" src="index.tsx"></script>
   </body>
 </html>

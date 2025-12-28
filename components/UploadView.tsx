@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 
 interface UploadViewProps {
@@ -72,7 +73,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onImageSelected }) => {
       </div>
 
       <div className="text-xs text-gray-400 max-w-xs">
-        Powered by Gemini 3 Pro Vision
+        Powered by Gemini 3 Pro
       </div>
     </div>
   );

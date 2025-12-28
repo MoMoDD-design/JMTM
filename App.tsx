@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { AppState, MenuItem, Cart } from './types';
 import { Header } from './components/Header';
@@ -19,14 +20,14 @@ const App: React.FC = () => {
     try {
       const items = await parseMenuImage(base64);
       if (items.length === 0) {
-        throw new Error("無法辨識出任何菜單項目，請更換照片角度或亮度後重試。");
+        throw new Error("無法辨識出任何菜單項目，請換張照片試試。");
       }
       setMenuItems(items);
       setAppState(AppState.MENU);
     } catch (e: any) {
       console.error(e);
-      setErrorMsg(e.message || "發生錯誤，請稍後再試");
-      setAppState(AppState.UPLOAD); // Go back to upload but show error
+      setErrorMsg(e.message || "辨識失敗，請檢查網路或 API 設定");
+      setAppState(AppState.UPLOAD);
     }
   }, []);
 
@@ -44,20 +45,11 @@ const App: React.FC = () => {
     if (appState === AppState.SUMMARY) {
       setAppState(AppState.MENU);
     } else if (appState === AppState.MENU) {
-      if (window.confirm("確定要放棄目前的菜單嗎？")) {
+      if (window.confirm("要回上一步重新掃描嗎？目前的選擇會清除。")) {
         setAppState(AppState.UPLOAD);
         setCart({});
         setMenuItems([]);
       }
-    }
-  };
-
-  const resetApp = () => {
-    if (window.confirm("確定要結束並開始新訂單嗎？")) {
-      setAppState(AppState.UPLOAD);
-      setCart({});
-      setMenuItems([]);
-      setErrorMsg(null);
     }
   };
 
@@ -68,9 +60,10 @@ const App: React.FC = () => {
       )}
 
       <main className="max-w-3xl mx-auto w-full">
-        {errorMsg && appState === AppState.UPLOAD && (
-          <div className="m-4 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm">
-            <span className="font-bold">錯誤：</span> {errorMsg}
+        {errorMsg && (
+          <div className="m-4 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm flex items-center gap-2">
+            <span className="text-lg">❌</span>
+            <div>{errorMsg}</div>
           </div>
         )}
 
@@ -95,7 +88,13 @@ const App: React.FC = () => {
           <OrderSummaryView 
             items={menuItems} 
             cart={cart} 
-            onReset={resetApp}
+            onReset={() => {
+              if (window.confirm("確定要開始新訂單嗎？")) {
+                setAppState(AppState.UPLOAD);
+                setCart({});
+                setMenuItems([]);
+              }
+            }}
             onEdit={() => setAppState(AppState.MENU)}
           />
         )}
