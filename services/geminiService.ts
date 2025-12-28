@@ -2,7 +2,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { MenuItem } from "../types";
 
-export const parseMenuImage = async (base64Image: string): Promise<MenuItem[]> => {
+export const parseMenuImage = async (base64Image: string, mimeType: string = "image/jpeg"): Promise<MenuItem[]> => {
   const apiKey = process.env.API_KEY;
 
   if (!apiKey || apiKey === 'undefined') {
@@ -16,10 +16,12 @@ export const parseMenuImage = async (base64Image: string): Promise<MenuItem[]> =
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-pro-preview",
+      // 改用 Flash 模型，速度更快且配額較寬鬆，適合大多數圖像辨識任務
+      model: "gemini-3-flash-preview",
       contents: {
         parts: [
-          { inlineData: { mimeType: "image/jpeg", data: base64Image } },
+          // 使用傳入的 mimeType，避免因格式錯誤導致的解析失敗
+          { inlineData: { mimeType: mimeType, data: base64Image } },
           { text: prompt }
         ]
       },
@@ -54,9 +56,13 @@ export const parseMenuImage = async (base64Image: string): Promise<MenuItem[]> =
     }));
   } catch (error: any) {
     console.error("Gemini Error:", error);
+    
+    // 如果是 API Key 相關錯誤
     if (error.message?.includes('API key')) {
       throw new Error("API Key 無效或未授權，請檢查 Vercel 設定。");
     }
-    throw new Error("辨識失敗：Gemini 服務目前繁忙，請稍後再試。");
+    
+    // 拋出真實的錯誤訊息，方便除錯
+    throw new Error(`Gemini 錯誤 (${error.status || 'Unknown'}): ${error.message || '服務繁忙，請稍後再試。'}`);
   }
 };

@@ -2,7 +2,7 @@
 import React, { useRef } from 'react';
 
 interface UploadViewProps {
-  onImageSelected: (base64: string) => void;
+  onImageSelected: (base64: string, mimeType: string) => void;
 }
 
 export const UploadView: React.FC<UploadViewProps> = ({ onImageSelected }) => {
@@ -19,8 +19,10 @@ export const UploadView: React.FC<UploadViewProps> = ({ onImageSelected }) => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
+      // result 格式為 "data:image/jpeg;base64,....."
       const base64 = result.split(',')[1];
-      onImageSelected(base64);
+      // 傳遞 base64 與真實的 mimeType
+      onImageSelected(base64, file.type);
     };
     reader.readAsDataURL(file);
   };
@@ -73,7 +75,7 @@ export const UploadView: React.FC<UploadViewProps> = ({ onImageSelected }) => {
       </div>
 
       <div className="text-xs text-gray-400 max-w-xs">
-        Powered by Gemini 3 Pro
+        Powered by Gemini 3 Flash
       </div>
     </div>
   );

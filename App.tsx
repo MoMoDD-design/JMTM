@@ -23,11 +23,11 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleImageSelected = useCallback(async (base64: string) => {
+  const handleImageSelected = useCallback(async (base64: string, mimeType: string) => {
     setAppState(AppState.PROCESSING);
     setErrorMsg(null);
     try {
-      const items = await parseMenuImage(base64);
+      const items = await parseMenuImage(base64, mimeType);
       if (items.length === 0) {
         throw new Error("無法辨識出任何菜單項目，請換張照片試試。");
       }
@@ -35,6 +35,7 @@ const App: React.FC = () => {
       setAppState(AppState.MENU);
     } catch (e: any) {
       console.error(e);
+      // 直接顯示原始錯誤訊息，幫助使用者判斷是網路問題還是 API 問題
       setErrorMsg(e.message || "辨識失敗，請檢查網路或 API 設定");
       setAppState(AppState.UPLOAD);
     }
@@ -100,9 +101,9 @@ const App: React.FC = () => {
 
       <main className="max-w-3xl mx-auto w-full">
         {errorMsg && (
-          <div className="m-4 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm flex items-center gap-2">
-            <span className="text-lg">❌</span>
-            <div>{errorMsg}</div>
+          <div className="m-4 p-4 bg-red-50 text-red-700 rounded-lg border border-red-200 text-sm flex items-center gap-2 animate-pulse">
+            <span className="text-lg">⚠️</span>
+            <div className="break-all">{errorMsg}</div>
           </div>
         )}
 
