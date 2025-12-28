@@ -3,9 +3,14 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { MenuItem } from "../types";
 
 export const parseMenuImage = async (base64Image: string): Promise<MenuItem[]> => {
-  // Use gemini-3-pro-preview for high-quality multimodal reasoning (OCR + translation)
-  // Always use process.env.API_KEY directly as per guidelines
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey || apiKey === 'undefined') {
+    throw new Error("API Key 缺失。請在 Vercel 設定環境變數並執行 Redeploy。");
+  }
+
+  // 每次呼叫時初始化，確保讀取最新狀態
+  const ai = new GoogleGenAI({ apiKey });
   
   const prompt = "辨識這張日文菜單照片（可能含手寫）。請精準翻譯並轉成 JSON 格式。包含：name_jp (日文), name_zh (繁體中文), price (數字), description (口味或成分, 10字內)。";
 
@@ -41,7 +46,6 @@ export const parseMenuImage = async (base64Image: string): Promise<MenuItem[]> =
       }
     });
 
-    // Directly access the .text property of GenerateContentResponse
     const text = response.text || "{\"items\":[]}";
     const result = JSON.parse(text);
     return (result.items || []).map((item: any, index: number) => ({
@@ -50,6 +54,9 @@ export const parseMenuImage = async (base64Image: string): Promise<MenuItem[]> =
     }));
   } catch (error: any) {
     console.error("Gemini Error:", error);
-    throw new Error("辨識失敗：Gemini 服務暫時無法回應，請稍後重試。");
+    if (error.message?.includes('API key')) {
+      throw new Error("API Key 無效或未授權，請檢查 Vercel 設定。");
+    }
+    throw new Error("辨識失敗：Gemini 服務目前繁忙，請稍後再試。");
   }
 };

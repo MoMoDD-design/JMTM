@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { AppState, MenuItem, Cart } from './types';
 import { Header } from './components/Header';
 import { UploadView } from './components/UploadView';
@@ -13,6 +13,15 @@ const App: React.FC = () => {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [cart, setCart] = useState<Cart>({});
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isKeyMissing, setIsKeyMissing] = useState(false);
+
+  // 檢查環境變數是否正確注入
+  useEffect(() => {
+    const key = process.env.API_KEY;
+    if (!key || key === 'undefined' || key.length < 10) {
+      setIsKeyMissing(true);
+    }
+  }, []);
 
   const handleImageSelected = useCallback(async (base64: string) => {
     setAppState(AppState.PROCESSING);
@@ -52,6 +61,36 @@ const App: React.FC = () => {
       }
     }
   };
+
+  // 如果金鑰缺失，顯示引導畫面
+  if (isKeyMissing) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6 text-center">
+        <div className="bg-white p-8 rounded-3xl shadow-xl max-w-sm border border-red-100">
+          <div className="text-5xl mb-4">🔑</div>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">API Key 尚未生效</h2>
+          <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+            雖然您可能在 Vercel 設定了變數，但網頁需要 **「重新編譯」** 才能把金鑰嵌入進去。
+          </p>
+          <div className="text-left bg-gray-50 p-4 rounded-xl text-xs text-gray-500 mb-6 space-y-2">
+            <p className="font-bold text-gray-700">修正步驟：</p>
+            <ol className="list-decimal pl-4 space-y-1">
+              <li>前往 Vercel 專案的 <b>Deployments</b> 分頁。</li>
+              <li>找到最上方的部署項目。</li>
+              <li>點擊右側 <b>...</b> 並選擇 <b>Redeploy</b>。</li>
+              <li>完成後重新整理此頁面。</li>
+            </ol>
+          </div>
+          <button 
+            onClick={() => window.location.reload()}
+            className="w-full py-3 bg-red-600 text-white rounded-xl font-bold active:scale-95 transition-transform"
+          >
+            我已重新部署，點此重整
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fcfcfc] text-slate-800">
