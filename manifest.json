@@ -1,3 +1,4 @@
+
 {
   "name": "JP Menu Master 日文菜單翻譯",
   "short_name": "菜單翻譯",
@@ -8,7 +9,7 @@
   "theme_color": "#dc2626",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/330/330439.png",
+      "src": "https://cdn-icons-png.flaticon.com/512/2276/2276931.png",
       "sizes": "512x512",
       "type": "image/png"
     }
