@@ -11,7 +11,7 @@
     <meta name="apple-mobile-web-app-title" content="日文菜單翻譯">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/330/330439.png">
     
-    <!-- PWA Manifest -->
+    <!-- PWA Manifest - 使用相對路徑 -->
     <link rel="manifest" href="manifest.json">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -20,28 +20,30 @@
       body {
         font-family: 'Noto Sans TC', 'Noto Sans JP', sans-serif;
         background-color: #fcfcfc;
-        /* 防止 iOS 橡皮筋回彈效果影響 UI */
         overscroll-behavior-y: contain;
       }
-      /* 全螢幕模式下的頂部間距調整 */
       @supports (padding-top: env(safe-area-inset-top)) {
         .safe-top {
           padding-top: env(safe-area-inset-top);
         }
       }
     </style>
-  <script type="importmap">
+    <script type="importmap">
 {
   "imports": {
+    "react": "https://esm.sh/react@19.0.0",
+    "react-dom": "https://esm.sh/react-dom@19.0.0",
+    "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
+    "@google/genai": "https://esm.sh/@google/genai@1.3.0",
     "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "@google/genai": "https://esm.sh/@google/genai@^1.33.0"
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
   }
 }
 </script>
-</head>
+  </head>
   <body>
     <div id="root"></div>
+    <!-- 必須加入此行來啟動應用程式 -->
+    <script type="module" src="index.tsx"></script>
   </body>
 </html>
