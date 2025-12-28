@@ -1,0 +1,16 @@
+{
+  "name": "JP Menu Master 日文菜單翻譯",
+  "short_name": "菜單翻譯",
+  "description": "日本旅遊必備！拍照即翻譯日文菜單並協助點餐",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/330/330439.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

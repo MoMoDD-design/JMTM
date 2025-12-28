@@ -1,0 +1,7 @@
+{
+  "name": "JP Menu Master",
+  "description": "Snap a photo of any Japanese menu (even handwritten), translate it to Chinese, pick your items, and generate a clear order screen for the waiter.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
