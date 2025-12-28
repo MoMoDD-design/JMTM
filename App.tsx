@@ -6,7 +6,7 @@ import { UploadView } from './components/UploadView';
 import { ProcessingView } from './components/ProcessingView';
 import { MenuView } from './components/MenuView';
 import { OrderSummaryView } from './components/OrderSummaryView';
-import { parseMenuImage } from './services/geminiService';
+import { parseMenuImages } from './services/geminiService';
 
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>(AppState.UPLOAD);
@@ -23,11 +23,11 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const handleImageSelected = useCallback(async (base64: string, mimeType: string) => {
+  const handleImagesSelected = useCallback(async (images: { base64: string, mimeType: string }[]) => {
     setAppState(AppState.PROCESSING);
     setErrorMsg(null);
     try {
-      const items = await parseMenuImage(base64, mimeType);
+      const items = await parseMenuImages(images);
       if (items.length === 0) {
         throw new Error("無法辨識出任何菜單項目，請換張照片試試。");
       }
@@ -108,7 +108,7 @@ const App: React.FC = () => {
         )}
 
         {appState === AppState.UPLOAD && (
-          <UploadView onImageSelected={handleImageSelected} />
+          <UploadView onImagesSelected={handleImagesSelected} />
         )}
 
         {appState === AppState.PROCESSING && (

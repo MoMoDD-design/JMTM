@@ -2,7 +2,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { MenuItem } from "../types";
 
-export const parseMenuImage = async (base64Image: string, mimeType: string = "image/jpeg"): Promise<MenuItem[]> => {
+export interface ImageInput {
+  base64: string;
+  mimeType: string;
+}
+
+export const parseMenuImages = async (images: ImageInput[]): Promise<MenuItem[]> => {
   const apiKey = process.env.API_KEY;
 
   if (!apiKey || apiKey === 'undefined') {
@@ -12,16 +17,23 @@ export const parseMenuImage = async (base64Image: string, mimeType: string = "im
   // 每次呼叫時初始化，確保讀取最新狀態
   const ai = new GoogleGenAI({ apiKey });
   
-  const prompt = "辨識這張日文菜單照片（可能含手寫）。請精準翻譯並轉成 JSON 格式。包含：name_jp (日文), name_zh (繁體中文), price (數字), description (口味或成分, 10字內)。";
+  const prompt = "這是同一份菜單的幾張照片（可能含手寫）。請整合所有圖片內容，精準翻譯並轉成 JSON 格式。包含：name_jp (日文), name_zh (繁體中文), price (數字), description (口味或成分, 10字內)。若有重複項目請自動合併。";
 
   try {
+    // 建構多張圖片的 payload
+    const imageParts = images.map(img => ({
+      inlineData: {
+        mimeType: img.mimeType,
+        data: img.base64
+      }
+    }));
+
     const response = await ai.models.generateContent({
-      // 改用 Flash 模型，速度更快且配額較寬鬆，適合大多數圖像辨識任務
+      // 使用 Flash 模型，速度快且支援多模態輸入
       model: "gemini-3-flash-preview",
       contents: {
         parts: [
-          // 使用傳入的 mimeType，避免因格式錯誤導致的解析失敗
-          { inlineData: { mimeType: mimeType, data: base64Image } },
+          ...imageParts,
           { text: prompt }
         ]
       },
@@ -57,12 +69,10 @@ export const parseMenuImage = async (base64Image: string, mimeType: string = "im
   } catch (error: any) {
     console.error("Gemini Error:", error);
     
-    // 如果是 API Key 相關錯誤
     if (error.message?.includes('API key')) {
       throw new Error("API Key 無效或未授權，請檢查 Vercel 設定。");
     }
     
-    // 拋出真實的錯誤訊息，方便除錯
     throw new Error(`Gemini 錯誤 (${error.status || 'Unknown'}): ${error.message || '服務繁忙，請稍後再試。'}`);
   }
 };
